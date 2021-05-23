@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLOCK</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="main">
+    <div class="clock-ctr">
+        <div id="day"></div>
+        <div id="time"></div>
+        <div id="date"></div>
+    </div>
+
+    <div class="quote-ctr">
+        <p id="quote"></p>
+        <p id="author"></p>
+    </div>
+
+    <script>
+        const day = document.getElementById('day')
+        const time = document.getElementById('time')
+        const date = document.getElementById('date')
+        const body = document.getElementById('main')
+        const thought = document.getElementById('quote')
+        const author = document.getElementById('author')
+        
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+        let hours = 0
+        let ampm = ''
+
+        
+
+        function quote(){
+            fetch('https://goquotes-api.herokuapp.com/api/v1/random?count=1')
+            .then(res => res.json())
+            .then(data => {
+                thought.innerHTML = data.quotes[0].text
+                author.innerHTML = data.quotes[0].author
+            })
+
+            setInterval(quote, 1800000)
+        }
+        quote()
+
+        setInterval(() => {
+            const clock = new Date()
+
+            hours = clock.getHours()
+            let minutes = clock.getMinutes()
+            let sec = clock.getSeconds()
+            ampm = hours >=12 ? 'PM' : 'AM'
+            let value = ''
+            hours = hours % 12
+            hours = hours ? hours : 12
+
+            if(minutes < 10){
+                minutes = '0'+ clock.getMinutes()
+            }
+
+            value = hours + ':' + minutes + ' ' + ampm
+
+            day.innerHTML = days[clock.getDay()]
+            time.innerHTML = value
+            date.innerHTML = clock.getDate() + ", " + months[clock.getMonth()]
+
+            if(window.innerWidth > 900){
+
+                if(hours <=6 && ampm === 'PM'){
+                    body.style.backgroundImage = "url(base/noon.jpg)"
+                    time.style.textShadow = "2px 2px 1px yellow"
+                    day.style.color = "yellow"
+                    time.style.color = "black"
+                    date.style.color = "black"
+                }
+                else if(hours > 6 && ampm === 'PM'){
+                    body.style.backgroundImage = "url(base/night.jpg)"
+                    time.style.textShadow = "2px 2px 1px white"
+                    day.style.color = "red"
+                    time.style.color = "black"
+                    date.style.color = "yellow"
+                }
+            }
+            else{
+                if(hours <=6 && ampm === 'PM'){
+                    body.style.backgroundImage = "linear-gradient(rgb(255, 255, 255), rgb(255, 174, 0))"
+                    time.style.textShadow = "2px 2px 1px red"
+                    day.style.color = "red"
+                }
+                else if(hours > 6 && ampm === 'PM'){
+                    body.style.backgroundImage = "linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0))"
+                    time.style.textShadow = "2px 2px 1px red"
+                    day.style.color = "red"
+                    time.style.color = "white"
+                    date.style.color = "yellow"
+                }
+            }
+            
+        }, 1000)
+        console.log(window.innerWidth)
+    </script>
+</body>
+</html>
